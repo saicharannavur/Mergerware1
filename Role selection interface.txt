@@ -1,0 +1,24 @@
+Role selection interface
+
+<template name="register">
+  <form>
+    <input type="email" placeholder="Email">
+    <input type="password" placeholder="Password">
+    <select name="role">
+      <option value="borrower">Borrower</option>
+      <option value="lender">Lender</option>
+      <option value="admin">Admin</option>
+    </select>
+    <button type="submit">Register</button>
+  </form>
+</template>
+
+// server-side: update profile with role after registration
+
+Accounts.onCreateUser((options, user) => {
+  if (options.profile) {
+    user.profile = options.profile;
+  }
+  user.profile.role = role; // set chosen role from registration form
+  return user;
+});

@@ -1,0 +1,35 @@
+Client side Registration file
+
+<template name="register">
+  <form>
+    <input type="email" placeholder="Email">
+    <input type="password" placeholder="Password">
+    <button type="submit">Register</button>
+  </form>
+</template>
+
+# JavaScript event handler code
+
+Template.register.events({
+  'submit form'(event) {
+    event.preventDefault();
+    const email = event.target.email.value;
+    const password = event.target.password.value;
+
+    Accounts.createUser({ email, password }, (error) => {
+      if (error) {
+        console.error(error);
+        // Handle registration error, display message to user
+      } else {
+        // Registration successful, redirect or display success message
+      }
+    });
+  }
+});
+
+# Server Side
+
+// Enable email registration using accounts-password package
+Accounts.config({
+  sendVerificationEmail: true // Send verification email after registration
+});

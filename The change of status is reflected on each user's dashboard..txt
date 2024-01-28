@@ -1,0 +1,29 @@
+Server Side:
+
+JavaScript
+Meteor.publish('borrowerLoans', function() {
+  if (!this.userId) {
+    return this.ready(); // Prevent unauthorized access
+  }
+
+  return Loans.find({ borrowerId: this.userId });
+});
+
+Meteor.methods({
+  approveLoan(loanId) {
+    // ... logic to update loan status to 'approved'
+    Loans.update(loanId, { $set: { status: 'approved' } });
+  },
+});
+
+Client Side:
+
+Template.borrowerDashboard.onCreated(function() {
+  this.subscribe('borrowerLoans');
+});
+
+Template.borrowerDashboard.helpers({
+  loans() {
+    return Loans.find({ borrowerId: Meteor.userId() });
+  },
+});

@@ -1,0 +1,50 @@
+Client Side 
+
+<h1>Pending Loan Requests</h1>
+<ul>
+  {{#each pendingRequests}}
+    <li data-loan-id="{{_id}}">
+      Amount: {{amount}} - Borrower: {{borrower.username}}
+      <button>Fund Loan</button>
+    </li>
+  {{/each}}
+</ul>
+
+<h1>Funded Loans</h1>
+<ul>
+  {{#each fundedLoans}}
+    <li>
+      Amount: {{amount}} - Borrower: {{borrower.username}}
+      {{#each paymentHistory}}
+        <p>Payment on: {{date}} - Amount: {{amount}}</p>
+      {{/each}}
+    </li>
+  {{/each}}
+</ul>
+
+<h1>Past Payments</h1>
+<ul>
+  {{#each pastPayments}}
+    <li>
+      Loan Amount: {{loanAmount}} - Payment on: {{date}} - Amount: {{amount}}
+    </li>
+  {{/each}}
+</ul>
+
+Server Side
+ 
+Meteor.methods({
+  fundLoan(loanId) {
+    if (!Meteor.userId()) {
+      throw new Meteor.Error('unauthorized', 'You must be logged in to fund a loan.');
+    }
+
+    const loan = Loans.findOne({ _id: loanId, status: 'pending' });
+    if (!loan) {
+      throw new Meteor.Error('invalidLoan', 'Loan not found or already funded.');
+    }
+
+    Loans.update(loanId, { $set: { status: 'funded', lenderId: Meteor.userId(), fundingDate: new Date() } });
+    // Notify borrower about funded loan
+  },
+});

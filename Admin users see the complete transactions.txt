@@ -1,0 +1,41 @@
+Server Side:
+
+Meteor.publish('allTransactions', function() {
+  if (!this.userId || !Roles.userIsInRole(this.userId, 'admin')) {
+    return this.ready(); // Prevent unauthorized access
+  }
+
+  return Loans.find({}, { fields: { paymentHistory: 1 } });
+});
+
+Client Side:
+
+Template.adminDashboard.onCreated(function() {
+  this.subscribe('allTransactions');
+});
+Template.adminDashboard.helpers({
+  allTransactions() {
+    return Loans.find({}, { sort: { requestedDate: -1 } }); // Sort by request date
+  },
+});
+
+// HTML
+
+<template name="adminDashboard">
+  <h1>All Transactions</h1>
+  <ul>
+    {{#each allTransactions}}
+      <li>
+        <p>Borrower: {{borrower.username}}</p>
+        <p>Amount: {{amount}}</p>
+        <p>Status: {{status}}</p>
+        <p>Payment History:</p>
+        <ul>
+          {{#each paymentHistory}}
+            <li>Date: {{date}} - Amount: {{amount}}</li>
+          {{/each}}
+        </ul>
+      </li>
+    {{/each}}
+  </ul>
+</template>

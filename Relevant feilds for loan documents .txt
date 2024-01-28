@@ -1,0 +1,77 @@
+Relevant feilds for loan documents 
+
+Loans.schema = {
+  borrowerId: {
+    type: String,
+    required: true,
+  },
+  amount: {
+    type: Number,
+    required: true,
+    min: 1,
+  },
+  requestedDate: {
+    type: Date,
+    defaultValue: new Date(),
+  },
+  status: {
+    type: String,
+    defaultValue: 'pending',
+  },
+  approvedDate: {
+    type: Date,
+  },
+  repaymentHistory: {
+    type: Array,
+    optional: true,
+  },
+};
+
+Borrower dashboard 
+
+<template name="borrowerDashboard">
+  <h1>Loan Requests</h1>
+  <form #loanRequestForm>
+    <button type="submit">Request Loan</button>
+  </form>
+  <h1>Existing Requests</h1>
+  {{#each existingRequests}}
+    <div class="loan-request">
+      Amount: {{amount}}
+      Status: {{status}}
+      {{#if approvedDate}}Approved on: {{approvedDateFormatted}}</if}}
+    </div>
+  {{/each}}
+  <h1>Past Loans</h1>
+  {{#each pastLoans}}
+    <div class="past-loan">
+      Amount: {{amount}}
+      Status: {{status}}
+      Paid: {{totalPaid}} (Total: {{amount}})
+      {{#each repaymentHistory}}
+        <p>Payment on: {{date}} - Amount: {{amount}}</p>
+      {{/each}}
+    </div>
+  {{/each}}
+</template>
+
+Loan request logic 
+
+Template.loanRequestForm.events({
+  'submit form'(event) {
+    event.preventDefault();
+    const amount = event.target.amount.value;
+    const repaymentPeriod = event.target.repaymentPeriod.value;
+
+    Meteor.call('submitLoanRequest', amount, repaymentPeriod, (error) => {
+      if (error) {
+        console.error(error);
+        // Show error message to user
+      } else {
+        // Reset form and show success message
+      }
+    });
+  }
+});
+
+
